@@ -12,7 +12,6 @@ public class Tile : MonoBehaviour
    [Header("Settings")]
    [SerializeField] private Color _baseColor, offsetColor;
 
-
    public bool IsCrossed { get; private set; }
    
    public void Init(bool isOffset)
@@ -22,8 +21,11 @@ public class Tile : MonoBehaviour
 
    private void OnMouseDown()
    {
+       if (IsCrossed) return;
+       
        IsCrossed = true;
        _cross.SetActive(true);
+       GameManager.Instance.OnTileCrossed(this);
    }
 
    private void OnMouseEnter()
