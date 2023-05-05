@@ -123,37 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &318725600
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 318725601}
-  m_Layer: 0
-  m_Name: ///////////////////////////////
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &318725601
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 318725600}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,7 +341,11 @@ PrefabInstance:
     - target: {fileID: 2418690812555128289, guid: 494a0fb7bc99e374eabb76586111b1a7, type: 3}
       propertyPath: _cam
       value: 
-      objectReference: {fileID: 519420032}
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 2418690812555128289, guid: 494a0fb7bc99e374eabb76586111b1a7, type: 3}
+      propertyPath: _size
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2418690812555128291, guid: 494a0fb7bc99e374eabb76586111b1a7, type: 3}
       propertyPath: m_Name
       value: GridManager

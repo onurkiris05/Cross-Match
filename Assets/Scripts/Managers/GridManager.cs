@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private int _width, _height;
+    [SerializeField] private int _size;
     [SerializeField] private Tile _tilePrefab;
-    [SerializeField] private Transform _cam;
+    [SerializeField] private Camera _cam;
 
     private Dictionary<Vector2, Tile> _tiles;
     private int _crossedTileCount;
@@ -15,7 +15,7 @@ public class GridManager : MonoBehaviour
 
     void Start()
     {
-        GenerateGrid();
+        GenerateBoard(_size);
     }
 
     #endregion
@@ -57,14 +57,14 @@ public class GridManager : MonoBehaviour
 
     #region PRIVATE METHODS
 
-    private void GenerateGrid()
+    private void GenerateBoard(int size)
     {
         _tiles = new Dictionary<Vector2, Tile>();
 
         // Create the grid
-        for (int x = 0; x < _width; x++)
+        for (int x = 0; x < size; x++)
         {
-            for (int y = 0; y < _height; y++)
+            for (int y = 0; y < size; y++)
             {
                 var spawnedTile = Instantiate(_tilePrefab, new Vector3(x, y), Quaternion.identity, transform);
                 spawnedTile.name = $"Tile ({x},{y})";
@@ -78,9 +78,21 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // Center the camera on the grid
-        _cam.transform.position = new Vector3((float)_width / 2 - 0.5f, (float)_height / 2 - 0.5f, -10);
+        // Center the camera on the board
+        var bounds = new Bounds(new Vector3((size - 1) / 2f, (size - 1) / 2f, 0f), new Vector3(size, size, 0f));
+        var cameraDistance = Mathf.Max(bounds.size.x, bounds.size.y) / (2f * Mathf.Tan(Mathf.Deg2Rad * _cam.fieldOfView / 2f));
+        _cam.transform.position = bounds.center - cameraDistance * _cam.transform.forward;
+
+        // Adjust the camera to fit the board on the screen
+        float aspectRatio = (float)Screen.width / (float)Screen.height;
+        float orthoSize = bounds.size.y / 2f;
+        if (bounds.size.x > bounds.size.y * aspectRatio)
+        {
+            orthoSize = bounds.size.x / (2f * aspectRatio);
+        }
+        _cam.orthographicSize = orthoSize;
     }
+
 
     private Tile GetTile(Vector2 pos)
     {
