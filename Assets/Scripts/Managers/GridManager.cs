@@ -1,43 +1,29 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [Header("Components")]
+    [Header("Components")] 
     [SerializeField] private Tile _tilePrefab;
     [SerializeField] private Camera _cam;
+    [SerializeField] private TMP_InputField _input;
+
+    private Dictionary<Vector2, Tile> _tiles = new();
     
-    [Space(10)]
-    [Header("Settings")]
-    [SerializeField] private int _size;
-
-    private Dictionary<Vector2, Tile> _tiles;
-
-    #region UNITY EVENTS
-
-    void Start()
-    {
-        GenerateBoard(_size);
-    }
-
-    #endregion
 
     #region PUBLIC METHODS
-    
-    public Tile GetTile(Vector2 pos)
+
+    public void GenerateBoard()
     {
-        if (_tiles.TryGetValue(pos, out var tile)) { return tile; }
-        
-        return null;
-    }
+        ClearBoard();
 
-    #endregion
-
-    #region PRIVATE METHODS
-
-    private void GenerateBoard(int size)
-    {
-        _tiles = new Dictionary<Vector2, Tile>();
+        // Get the size of the board
+        if (!int.TryParse(_input.text, out var size) || size < 2)
+        {
+            Debug.Log("Invalid input. Enter a value greater than or equal to 2!");
+            return;
+        }
 
         // Create the grid
         for (int x = 0; x < size; x++)
@@ -56,11 +42,32 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // Center the camera on the board
-        var bounds = new Bounds(new Vector3((size - 1) / 2f, (size - 1) / 2f, 0f), new Vector3(size, size, 0f));
-        var cameraDistance = Mathf.Max(bounds.size.x, bounds.size.y) / (2f * Mathf.Tan(Mathf.Deg2Rad * _cam.fieldOfView / 2f));
-        _cam.transform.position = bounds.center - cameraDistance * _cam.transform.forward;
+        AdjustCamera(size);
+    }
 
+    public Tile GetTile(Vector2 pos)
+    {
+        if (_tiles.TryGetValue(pos, out var tile))
+        {
+            return tile;
+        }
+
+        return null;
+    }
+
+    #endregion
+
+    #region PRIVATE METHODS
+    
+    private void AdjustCamera(int size)
+    {
+        // Center the camera on the board
+        var bounds = new Bounds(new Vector3((size - 1) / 2f, (size - 1) / 2f, 0f),
+            new Vector3(size, size, 0f));
+        var cameraDistance = Mathf.Max(bounds.size.x, bounds.size.y) /
+                             (2f * Mathf.Tan(Mathf.Deg2Rad * _cam.fieldOfView / 2f));
+        _cam.transform.position = bounds.center - cameraDistance * _cam.transform.forward;
+    
         // Adjust the camera to fit the board on the screen
         float aspectRatio = (float)Screen.width / (float)Screen.height;
         float orthoSize = bounds.size.y / 2f;
@@ -68,7 +75,22 @@ public class GridManager : MonoBehaviour
         {
             orthoSize = bounds.size.x / (2f * aspectRatio);
         }
+        
         _cam.orthographicSize = orthoSize;
     }
+
+    private void ClearBoard()
+    {
+        if (_tiles.Count > 0)
+        {
+            foreach (var tile in _tiles.Values)
+            {
+                Destroy(tile.gameObject);
+            }
+
+            _tiles.Clear();
+        }
+    }
+
     #endregion
 }

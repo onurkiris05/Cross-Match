@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour
 { 
@@ -8,11 +9,12 @@ public class Tile : MonoBehaviour
    [SerializeField] private BoxCollider2D _collider;
    [SerializeField] private GameObject _cross;
    
-   [Header("Settings")]
-   [SerializeField] private Color _baseColor, offsetColor;
-   [SerializeField] private bool isCrossed;
+   [Space][Header("Settings")]
+   [SerializeField] private Color _baseColor;
+   [SerializeField] private Color _offsetColor;
+   [SerializeField] private bool _isCrossed;
 
-   public bool IsCrossed => isCrossed;
+   public bool IsCrossed => _isCrossed;
    private Material _dissolveMat;
    private readonly int _dissolveAmount = Shader.PropertyToID("_DissolveAmount");
 
@@ -25,10 +27,10 @@ public class Tile : MonoBehaviour
    
    private void OnMouseDown()
    {
-       if (isCrossed) return;
+       if (_isCrossed || EventSystem.current.IsPointerOverGameObject()) return;
        
        _collider.enabled = false;
-       isCrossed = true;
+       _isCrossed = true;
        _cross.SetActive(true);
        GameManager.Instance.OnTileCrossed(this);
    }
@@ -39,12 +41,12 @@ public class Tile : MonoBehaviour
 
    public void Init(bool isOffset)
    {
-       _renderer.color = isOffset ? offsetColor : _baseColor;
+       _renderer.color = isOffset ? _offsetColor : _baseColor;
    }
 
    public void OnReset()
    {
-       isCrossed = false;
+       _isCrossed = false;
        DOTween.To(() => _dissolveMat.GetFloat(_dissolveAmount), 
            x => _dissolveMat.SetFloat(_dissolveAmount, x), 0, 0.7f).OnComplete(() =>
        {
