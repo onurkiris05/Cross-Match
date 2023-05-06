@@ -1,22 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private GridManager _gridManager;
+    [Header("Components")]
+    [SerializeField] private MatchManager _matchManager;
+
+    #region PUBLIC METHODS
 
     public void OnTileCrossed(Tile tile)
     {
-        if (_gridManager.CheckMatches(tile))
+        if (_matchManager.AreThereMatches(tile))
         {
-            RestartGame();
+            // Do some win condition stuff here
         }
     }
 
-    public void RestartGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+    #endregion
 }

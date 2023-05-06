@@ -1,15 +1,17 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private int _size;
+    [Header("Components")]
     [SerializeField] private Tile _tilePrefab;
     [SerializeField] private Camera _cam;
+    
+    [Space(10)]
+    [Header("Settings")]
+    [SerializeField] private int _size;
 
     private Dictionary<Vector2, Tile> _tiles;
-    private int _crossedTileCount;
 
     #region UNITY EVENTS
 
@@ -21,36 +23,12 @@ public class GridManager : MonoBehaviour
     #endregion
 
     #region PUBLIC METHODS
-
-    public bool CheckMatches(Tile tile)
+    
+    public Tile GetTile(Vector2 pos)
     {
-        _crossedTileCount++;
-        if (_crossedTileCount < 3) { return false; }
-
-        var pos = tile.transform.position;
-        var matches = new List<Tile>();
-
-        // HORIZONTAL MATCHES
-        // Check for right direction matches
-        var rightMatches = FindMatches(pos, Vector2.right);
-        matches.AddRange(rightMatches);
-        // Check for left direction matches
-        var leftMatches = FindMatches(pos, Vector2.left);
-        matches.AddRange(leftMatches);
-
-        // If there is a horizontal match, return early
-        if (matches.Count >= 2) { return true; }
-
-        // VERTICAL MATCHES
-        matches.Clear();
-        // Check for up direction matches
-        var upMatches = FindMatches(pos, Vector2.up);
-        matches.AddRange(upMatches);
-        // Check for down direction matches
-        var downMatches = FindMatches(pos, Vector2.down);
-        matches.AddRange(downMatches);
+        if (_tiles.TryGetValue(pos, out var tile)) { return tile; }
         
-        return matches.Count >= 2;
+        return null;
     }
 
     #endregion
@@ -92,29 +70,5 @@ public class GridManager : MonoBehaviour
         }
         _cam.orthographicSize = orthoSize;
     }
-
-
-    private Tile GetTile(Vector2 pos)
-    {
-        if (_tiles.TryGetValue(pos, out var tile)) { return tile; }
-        
-        return null;
-    }
-    
-    private List<Tile> FindMatches(Vector2 startPos, Vector2 increment)
-    {
-        var matches = new List<Tile>();
-        var pos = startPos;
-        for (int i = 1; i <= 2; i++)
-        {
-            pos += increment;
-            var newTile = GetTile(pos);
-            if (newTile == null || !newTile.IsCrossed) { break; }
-            
-            matches.Add(newTile);
-        }
-        return matches;
-    }
-
     #endregion
 }
